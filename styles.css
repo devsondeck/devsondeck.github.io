@@ -256,6 +256,12 @@ h2 span { color: var(--acc); }
 .dos dd { margin: 0; }
 .red { background: var(--ink); color: transparent; border-radius: 2px; padding: 0 3px; transition: background .2s, color .2s; user-select: none; }
 .red.cracking { background: rgba(249, 87, 33, .12); color: var(--acc); }
+.red:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.js-motion .stamp:not(.slam) { opacity: 0; }
+.stamp.slam { animation: slam .55s cubic-bezier(.2, 1.5, .4, 1); }
+@keyframes slam { 0% { opacity: 0; transform: scale(2.4) rotate(-16deg); } 55% { opacity: 1; } 100% { opacity: .92; transform: scale(1) rotate(-8deg); } }
+.dossier.shake { animation: shake .3s .3s; }
+@keyframes shake { 25% { translate: 0 4px; } 50% { translate: 0 -2px; } 75% { translate: 0 1px; } }
 .live { color: var(--acc); }
 .live::before { content: "●"; margin-right: 8px; animation: pulse 1.4s infinite; }
 .dos p { color: var(--dim); line-height: 1.55; margin: 0 0 22px; max-width: 440px; }

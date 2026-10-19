@@ -6,6 +6,7 @@ import { initPointer } from './pointer.js';
 import { initField } from './field.js';
 import { initHero } from './hero.js';
 import { initSections } from './sections.js';
+import { initLab } from './lab.js';
 
 // Tells the head script that the module graph loaded, so it keeps `js-motion`.
 document.documentElement.dataset.boot = '1';
@@ -30,3 +31,4 @@ boot('scroll', () => {
 boot('sections', () => initSections(scroll));
 boot('pointer', initPointer);
 boot('field', () => initField(document.getElementById('field')));
+boot('lab', initLab);
