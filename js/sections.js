@@ -77,16 +77,19 @@ function initCards() {
   tiles.forEach((t) => io.observe(t));
 
   if (reduce || !window.matchMedia('(hover: hover)').matches) return;
+  const invalidators = [];
+  const invalidateAll = () => invalidators.forEach((fn) => fn());
+  window.addEventListener('scroll', invalidateAll, { passive: true });
+  window.addEventListener('resize', invalidateAll);
   tiles.forEach((tile) => {
     if (tile.id === 'dossier') return;
-    const inner = tile.querySelector('.in');
+    const inner = tile.querySelector('.tilt');
     // pointer events live on the static tile; only the inner layer transforms
     let rect = null;
     const invalidate = () => {
       rect = null;
     };
-    window.addEventListener('scroll', invalidate, { passive: true });
-    window.addEventListener('resize', invalidate);
+    invalidators.push(invalidate);
     tile.addEventListener('mousemove', (e) => {
       if (!rect) rect = tile.getBoundingClientRect();
       const x = e.clientX - rect.left;

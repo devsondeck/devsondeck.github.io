@@ -67,7 +67,7 @@ test('cards tilt on hover-capable devices', async ({ page, isMobile }) => {
   await page.mouse.move(b.x + b.width / 2, b.y + 100);
   await page.mouse.move(b.x + b.width / 2 + 30, b.y + 110);
   await page.waitForTimeout(300);
-  const tr = await t.evaluate((e) => e.querySelector('.in').style.transform);
+  const tr = await t.evaluate((e) => e.querySelector('.tilt').style.transform);
   expect(tr).toContain('rotateY');
 });
 
@@ -90,14 +90,19 @@ test.describe('reduced motion', () => {
 });
 
 test('stripe wraps without a visible jump', async ({ page }) => {
-  test.setTimeout(120000);
+  await page.addInitScript(() => {
+    window.__tx = [];
+    const rec = () => {
+      const k = document.querySelector('.marquee .track');
+      if (k && k.style.transform) window.__tx.push(parseFloat(k.style.transform.slice(12)));
+      requestAnimationFrame(rec);
+    };
+    requestAnimationFrame(rec);
+  });
   await page.clock.install();
   await page.goto('/');
-  const tx = [];
-  for (let i = 0; i < 2500; i++) {
-    await page.clock.runFor(16);
-    tx.push(await page.evaluate(() => parseFloat(document.querySelector('.marquee .track').style.transform.slice(12))));
-  }
+  await page.clock.runFor(45000);
+  const tx = await page.evaluate(() => window.__tx);
   const period = await page.evaluate(() => {
     const k = document.querySelector('.marquee .track').children;
     return k[8].offsetLeft - k[0].offsetLeft;
@@ -127,7 +132,7 @@ test('tile hit area is stable near a corner', async ({ page, isMobile }) => {
   for (let i = 0; i < 8; i++) {
     await page.mouse.move(x - (i % 2), y + (i % 2));
     await page.waitForTimeout(40);
-    const tr = await t.evaluate((e) => e.querySelector('.in').style.transform);
+    const tr = await t.evaluate((e) => e.querySelector('.tilt').style.transform);
     expect(tr, `move ${i}`).toContain('rotateY');
   }
 });
@@ -142,6 +147,6 @@ test('reduced motion: cards do not tilt', async ({ page, isMobile }) => {
   await page.mouse.move(b.x + b.width / 2, b.y + 100);
   await page.mouse.move(b.x + b.width / 2 + 30, b.y + 110);
   await page.waitForTimeout(200);
-  await expect(t).toHaveCSS('transform', 'none');
-  expect(await t.evaluate((e) => e.querySelector('.in').style.transform)).toBe('');
+  await expect(t.locator('.tilt')).toHaveCSS('transform', 'none');
+  expect(await t.evaluate((e) => e.querySelector('.tilt').style.transform)).toBe('');
 });
