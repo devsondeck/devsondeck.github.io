@@ -154,6 +154,9 @@ h1 .w > .rot { color: var(--acc); display: inline-grid; }
 .label, .sec-label { font: 12px 'JetBrains Mono', monospace; color: var(--acc); letter-spacing: .08em; margin-bottom: 26px; display: block; }
 .manifesto p { font-size: clamp(28px, 3.6vw, 54px); line-height: 1.15; letter-spacing: -.025em; font-weight: 500; margin: 0; }
 .manifesto .hot { color: var(--acc); }
+.js-motion .manifesto .wd { color: rgba(237, 232, 223, .14); transition: color .25s; }
+.js-motion .manifesto .wd.lit { color: var(--ink); }
+.js-motion .manifesto .wd.hot.lit { color: var(--acc); }
 
 /* ---------- services ---------- */
 .services { position: relative; z-index: 2; padding: 60px 5vw 120px; }
@@ -167,6 +170,11 @@ h2 span { color: var(--acc); }
 @property --ang { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @keyframes rim { to { --ang: 360deg; } }
 .tile:hover::before { opacity: 1; }
+.tile { transition: box-shadow .5s, opacity .9s, translate .9s cubic-bezier(.16, 1, .3, 1), transform .25s ease-out; }
+.js-motion .tile { opacity: 0; translate: 0 50px; }
+.js-motion .tile.show { opacity: 1; translate: 0 0; }
+.tile .in::after { content: ""; position: absolute; inset: 0; background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(249, 87, 33, .18), transparent 60%); opacity: 0; transition: opacity .4s; pointer-events: none; }
+.tile:hover .in::after { opacity: 1; }
 .tile:hover { box-shadow: 0 60px 100px -40px rgba(0, 0, 0, .95), 0 30px 70px -30px rgba(249, 87, 33, .45); }
 .tile .in { position: relative; height: 100%; border-radius: 25px; padding: 30px; overflow: hidden; background: radial-gradient(120% 80% at 0% 0%, #241d18 0%, #17130f 55%, #120f0d 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07); }
 .tile .head { display: flex; justify-content: space-between; align-items: center; font: 12px 'JetBrains Mono', monospace; color: var(--dim); position: relative; z-index: 2; }
@@ -174,6 +182,7 @@ h2 span { color: var(--acc); }
 .tile h3 { font-size: 30px; margin: 0 0 10px; letter-spacing: -.02em; position: relative; z-index: 2; }
 .tile p { color: var(--dim); line-height: 1.55; margin: 0; max-width: 420px; position: relative; z-index: 2; }
 .viz { position: relative; z-index: 1; margin: 26px 0; }
+@media (hover: hover) { .viz { transform: translate3d(calc(var(--px, 0) * 14px), calc(var(--py, 0) * 14px), 0); transition: transform .6s cubic-bezier(.16, 1, .3, 1); } }
 .t1 .in { display: flex; flex-direction: column; }
 .t1 .viz { flex: 1; min-height: 300px; }
 .t3 .viz { height: 150px; }

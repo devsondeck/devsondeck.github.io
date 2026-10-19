@@ -5,6 +5,7 @@ import { initScroll } from './scroll.js';
 import { initPointer } from './pointer.js';
 import { initField } from './field.js';
 import { initHero } from './hero.js';
+import { initSections } from './sections.js';
 
 // Tells the head script that the module graph loaded, so it keeps `js-motion`.
 document.documentElement.dataset.boot = '1';
@@ -16,12 +17,16 @@ function boot(name, fn) {
   } catch (err) {
     console.error(`${name} failed`, err);
     // never leave content hidden if the hero could not start
-    if (name === 'hero') document.documentElement.classList.remove('js-motion');
+    if (name === 'hero' || name === 'sections') document.documentElement.classList.remove('js-motion');
   }
 }
 
 boot('hero', initHero);
 boot('contact', initContact);
-boot('scroll', initScroll);
+let scroll = { velocity: () => 0 };
+boot('scroll', () => {
+  scroll = initScroll();
+});
+boot('sections', () => initSections(scroll));
 boot('pointer', initPointer);
 boot('field', () => initField(document.getElementById('field')));
