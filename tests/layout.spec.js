@@ -46,6 +46,9 @@ test('hero chat column is fixed', async ({ page }, info) => {
 });
 
 test('story visuals render finished', async ({ page }) => {
+  // the finished state is what reduced-motion visitors see; with motion on, the intro hides some of it
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
   await expect(page.locator('#n-inbox small')).toHaveText('141 new');
   await expect(page.locator('#n-agent small')).toHaveText('2 done · 0 humans');
   await expect(page.locator('#build')).toHaveClass(/s1.*s2.*s3.*s7/);
