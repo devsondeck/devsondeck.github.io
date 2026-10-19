@@ -19,7 +19,7 @@ function boot(name, fn) {
   } catch (err) {
     console.error(`${name} failed`, err);
     // never leave content hidden if the hero could not start
-    if (name === 'hero' || name === 'sections') document.documentElement.classList.remove('js-motion');
+    if (name === 'hero' || name === 'sections' || name === 'lab') document.documentElement.classList.remove('js-motion');
   }
 }
 

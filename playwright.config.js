@@ -5,6 +5,8 @@ const BASE = `http://localhost:${PORT}`;
 
 module.exports = defineConfig({
   testDir: 'tests',
+  retries: process.env.CI ? 2 : 0,
+  forbidOnly: !!process.env.CI,
   use: { channel: 'chrome', baseURL: BASE },
   webServer: {
     command: `npx http-server -p ${PORT} -s -c-1`,

@@ -152,3 +152,21 @@ test('reduced motion: cards do not tilt', async ({ page, isMobile }) => {
   await expect(t.locator('.tilt')).toHaveCSS('transform', 'none');
   expect(await t.evaluate((e) => e.querySelector('.tilt').style.transform)).toBe('');
 });
+
+test('skip link moves keyboard focus into services', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'keyboard flow');
+  await page.goto('/');
+  await page.keyboard.press('Tab');
+  await expect(page.locator('a.skip')).toBeFocused();
+  await page.keyboard.press('Enter');
+  // focus moved to the target itself
+  await expect(page.locator('#services')).toBeFocused();
+  // #services holds nothing focusable, so the next Tab lands after it, never back in the nav
+  await page.keyboard.press('Tab');
+  const after = await page.evaluate(() => {
+    const s = document.getElementById('services');
+    const el = document.activeElement;
+    return el !== document.body && !!(s.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  expect(after).toBe(true);
+});

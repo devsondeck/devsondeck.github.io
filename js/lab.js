@@ -17,9 +17,9 @@ function initStamp() {
         dossier.classList.add('shake');
       });
     },
-    { threshold: 0.5 }
+    { threshold: 0.6 }
   );
-  io.observe(dossier);
+  io.observe(stamp);
 }
 
 function initRedactions() {
@@ -28,6 +28,7 @@ function initRedactions() {
     const orig = red.textContent;
     let timer = 0;
     red.tabIndex = 0;
+    red.setAttribute('role', 'img');
     red.setAttribute('aria-label', 'redacted');
     const crack = () => {
       clearInterval(timer);

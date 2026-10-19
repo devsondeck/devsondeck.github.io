@@ -32,7 +32,12 @@ function initCursor() {
   const dot = document.querySelector('.cur-dot');
   const ring = document.querySelector('.cur-ring');
   if (!dot || !ring) return;
-  document.documentElement.classList.add('has-cursor');
+  const show = (e) => {
+    if (e.pointerType === 'touch') return;
+    document.documentElement.classList.add('has-cursor');
+    removeEventListener('pointermove', show);
+  };
+  addEventListener('pointermove', show, { passive: true });
   let rx = pointer.x;
   let ry = pointer.y;
   onFrame(() => {

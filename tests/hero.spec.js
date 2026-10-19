@@ -30,13 +30,27 @@ test('words rotate', async ({ page }) => {
 
 test('chat plays in order', async ({ page }) => {
   await page.goto('/');
-  const count = () => page.locator('#chat .msg.on').count();
-  // the first message appears, and messages only ever turn on in order
-  await expect.poll(count, { timeout: 4000 }).toBeGreaterThanOrEqual(1);
-  await expect(page.locator('#chat .msg').first()).toHaveClass(/\bon\b/);
-  await expect.poll(count, { timeout: 8000 }).toBe(4);
-  const on = await page.locator('#chat .msg').evaluateAll((els) => els.map((e) => e.classList.contains('on')));
-  expect(on.slice(0, 4)).toEqual([true, true, true, true]);
+  // sample which messages are on, over time, from page load
+  await page.evaluate(() => {
+    window.__samples = [];
+    const read = () => [...document.querySelectorAll('#chat .msg')].map((m, i) => (m.classList.contains('on') ? i : -1)).filter((i) => i >= 0);
+    window.__samples.push(read());
+    window.__timer = setInterval(() => window.__samples.push(read()), 25);
+  });
+  await expect.poll(() => page.evaluate(() => Math.max(...window.__samples.map((s) => s.length))), { timeout: 10000 }).toBe(4);
+  const samples = await page.evaluate(() => {
+    clearInterval(window.__timer);
+    return window.__samples;
+  });
+  expect(samples[0]).toEqual([]);
+  let prev = 0;
+  for (const s of samples) {
+    // on-set is always messages [0..n)
+    expect(s).toEqual(s.map((_, i) => i));
+    // within the first cycle the count never goes down
+    expect(s.length).toBeGreaterThanOrEqual(prev);
+    prev = s.length;
+  }
 });
 
 test('sticker text fits one lap', async ({ page }) => {

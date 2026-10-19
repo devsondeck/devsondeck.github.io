@@ -24,13 +24,17 @@ export function initField(canvas) {
   let dpr = 1;
   let pts = [];
 
+  let lastW = -1;
   function init() {
+    const widthChanged = innerWidth !== lastW;
+    lastW = innerWidth;
     dpr = Math.min(devicePixelRatio || 1, 1.75);
     W = canvas.width = Math.round(innerWidth * dpr);
     H = canvas.height = Math.round(innerHeight * dpr);
     canvas.style.width = innerWidth + 'px';
     canvas.style.height = innerHeight + 'px';
     if (glow) gw = glow.offsetWidth;
+    if (!widthChanged && pts.length) return; // height-only resize (mobile URL bar): keep points
     pts = [];
     const gap = (innerWidth < 860 ? 30 : 38) * dpr;
     for (let y = gap / 2; y < H; y += gap) {
