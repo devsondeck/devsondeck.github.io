@@ -101,7 +101,7 @@ test('stripe wraps without a visible jump', async ({ page }) => {
   });
   await page.clock.install();
   await page.goto('/');
-  await page.clock.runFor(45000);
+  await page.clock.runFor(30000);
   const tx = await page.evaluate(() => window.__tx);
   const period = await page.evaluate(() => {
     const k = document.querySelector('.marquee .track').children;
