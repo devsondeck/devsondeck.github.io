@@ -69,3 +69,16 @@ test('resize keeps layout', async ({ page, isMobile }) => {
     if (desktop) expect((await box(page, '#chat')).width).toBeCloseTo(400, 0);
   }
 });
+
+test('js-motion is set before main.js runs and hero shows with Lenis blocked', async ({ page }) => {
+  await page.route('**/lenis*', (r) => r.abort());
+  await page.addInitScript(() => {
+    document.addEventListener('readystatechange', () => {
+      if (document.readyState === 'interactive') window.__early = document.documentElement.classList.contains('js-motion');
+    });
+  });
+  await page.goto('/');
+  expect(await page.evaluate(() => window.__early)).toBe(true);
+  await expect(page.locator('#h1 .w > span').first()).toHaveCSS('transform', 'none', { timeout: 3000 });
+  await expect(page.locator('#sub')).toHaveCSS('opacity', '1', { timeout: 3000 });
+});
