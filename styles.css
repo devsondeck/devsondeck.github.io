@@ -62,6 +62,22 @@ a, button, input { font: inherit; color: inherit; }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* film grain drifts in 6 steps */
+.grain { animation: grain 1s steps(6) infinite; }
+@keyframes grain { 0% { transform: translate(0, 0); } 20% { transform: translate(-3%, 2%); } 40% { transform: translate(2%, -3%); } 60% { transform: translate(-2%, -1%); } 80% { transform: translate(3%, 3%); } 100% { transform: translate(0, 0); } }
+
+/* ambient field + glow */
+#field { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.glow { position: fixed; top: 0; left: 0; width: 60vmax; height: 60vmax; border-radius: 50%; background: radial-gradient(circle, rgba(249, 87, 33, .13), transparent 62%); z-index: 0; pointer-events: none; will-change: transform; }
+
+/* custom cursor: only shown when JS enables it (fine pointer, no reduced motion) */
+.cur-dot, .cur-ring { display: none; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100; border-radius: 50%; }
+html.has-cursor .cur-dot, html.has-cursor .cur-ring { display: block; }
+html.has-cursor body, html.has-cursor a, html.has-cursor button, html.has-cursor input { cursor: none; }
+.cur-dot { width: 6px; height: 6px; background: var(--acc); margin: -3px 0 0 -3px; }
+.cur-ring { width: 36px; height: 36px; border: 1.5px solid rgba(237, 232, 223, .45); margin: -18px 0 0 -18px; transition: width .3s, height .3s, margin .3s, background .3s, border-color .3s; }
+.cur-ring.big { width: 74px; height: 74px; margin: -37px 0 0 -37px; background: rgba(249, 87, 33, .12); border-color: var(--acc); }
+
 @keyframes pulse { 50% { opacity: .3; } }
 
 /* ---------- nav ---------- */
