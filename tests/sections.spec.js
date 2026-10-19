@@ -67,7 +67,7 @@ test('cards tilt on hover-capable devices', async ({ page, isMobile }) => {
   await page.mouse.move(b.x + b.width / 2, b.y + 100);
   await page.mouse.move(b.x + b.width / 2 + 30, b.y + 110);
   await page.waitForTimeout(300);
-  const tr = await t.evaluate((e) => e.style.transform);
+  const tr = await t.evaluate((e) => e.querySelector('.in').style.transform);
   expect(tr).toContain('rotateY');
 });
 
@@ -75,11 +75,72 @@ test.describe('reduced motion', () => {
   test('vibe fully lit, cards visible', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
-    const colors = await page.$$eval('#mani .wd', (els) => els.map((e) => getComputedStyle(e).color));
-    expect(colors.length).toBeGreaterThan(10);
-    for (const c of colors) expect(['rgb(237, 232, 223)', 'rgb(249, 87, 33)']).toContain(c);
+    const words = await page.$$eval('#mani .wd', (els) =>
+      els.map((e) => [getComputedStyle(e).color, getComputedStyle(e).opacity]),
+    );
+    expect(words.length).toBeGreaterThan(10);
+    for (const [c, o] of words) {
+      expect(['rgb(237, 232, 223)', 'rgb(249, 87, 33)']).toContain(c);
+      expect(o).toBe('1');
+    }
     const ops = await page.$$eval('.tile', (els) => els.map((e) => getComputedStyle(e).opacity));
     expect(ops.length).toBeGreaterThan(0);
     for (const o of ops) expect(o).toBe('1');
   });
+});
+
+test('stripe wraps without a visible jump', async ({ page }) => {
+  await page.clock.install();
+  await page.goto('/');
+  const tx = [];
+  for (let i = 0; i < 2500; i++) {
+    await page.clock.runFor(16);
+    tx.push(await page.evaluate(() => parseFloat(document.querySelector('.marquee .track').style.transform.slice(12))));
+  }
+  const period = await page.evaluate(() => {
+    const k = document.querySelector('.marquee .track').children;
+    return k[8].offsetLeft - k[0].offsetLeft;
+  });
+  expect(period).toBeGreaterThan(500);
+  let wraps = 0;
+  for (let i = 1; i < tx.length; i++) {
+    const diff = tx[i] - tx[i - 1];
+    if (diff > 0) wraps++;
+    const m = ((diff % period) + period) % period;
+    expect(Math.min(m, period - m), `step ${i}`).toBeLessThanOrEqual(3);
+  }
+  expect(wraps).toBeGreaterThan(0);
+});
+
+test('tile hit area is stable near a corner', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'hover only');
+  await page.goto('/');
+  const t = page.locator('.tile.t2');
+  await t.scrollIntoViewIfNeeded();
+  await expect(t).toHaveClass(/show/);
+  await page.waitForTimeout(1200);
+  const b = await t.boundingBox();
+  const x = b.x + b.width - 10; // inside the 26px corner radius
+  const y = b.y + 10;
+  await page.mouse.move(x - 20, y + 20);
+  for (let i = 0; i < 8; i++) {
+    await page.mouse.move(x - (i % 2), y + (i % 2));
+    await page.waitForTimeout(40);
+    const tr = await t.evaluate((e) => e.querySelector('.in').style.transform);
+    expect(tr, `move ${i}`).toContain('rotateY');
+  }
+});
+
+test('reduced motion: cards do not tilt', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'hover only');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const t = page.locator('.tile.t2');
+  await t.scrollIntoViewIfNeeded();
+  const b = await t.boundingBox();
+  await page.mouse.move(b.x + b.width / 2, b.y + 100);
+  await page.mouse.move(b.x + b.width / 2 + 30, b.y + 110);
+  await page.waitForTimeout(200);
+  await expect(t).toHaveCSS('transform', 'none');
+  expect(await t.evaluate((e) => e.querySelector('.in').style.transform)).toBe('');
 });

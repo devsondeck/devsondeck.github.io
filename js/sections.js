@@ -13,9 +13,11 @@ function initStripe(scroll) {
   track.innerHTML = html.repeat(4);
   if (reduce) return;
 
+  // exact copy period: distance between the first item of copy 1 and copy 2 (includes the gap)
   let half = 0;
+  const per = ITEMS.length;
   const measure = () => {
-    half = track.scrollWidth / 2;
+    half = track.children[per].offsetLeft - track.children[0].offsetLeft;
   };
   measure();
   window.addEventListener('resize', measure);
@@ -74,17 +76,19 @@ function initCards() {
   );
   tiles.forEach((t) => io.observe(t));
 
-  if (!window.matchMedia('(hover: hover)').matches) return;
+  if (reduce || !window.matchMedia('(hover: hover)').matches) return;
   tiles.forEach((tile) => {
     if (tile.id === 'dossier') return;
     const inner = tile.querySelector('.in');
+    // pointer events live on the static tile; only the inner layer transforms
     let rect = null;
-    const cache = () => {
-      rect = tile.getBoundingClientRect();
+    const invalidate = () => {
+      rect = null;
     };
-    tile.addEventListener('mouseenter', cache);
+    window.addEventListener('scroll', invalidate, { passive: true });
+    window.addEventListener('resize', invalidate);
     tile.addEventListener('mousemove', (e) => {
-      if (!rect) cache();
+      if (!rect) rect = tile.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
       const fx = x / rect.width - 0.5;
@@ -93,11 +97,11 @@ function initCards() {
       inner.style.setProperty('--my', `${y}px`);
       inner.style.setProperty('--px', fx.toFixed(3));
       inner.style.setProperty('--py', fy.toFixed(3));
-      tile.style.transform = `perspective(1200px) rotateY(${fx * 18}deg) rotateX(${-fy * 18}deg) translateZ(10px)`;
+      inner.style.transform = `perspective(1200px) rotateY(${fx * 18}deg) rotateX(${-fy * 18}deg) translateZ(10px)`;
     });
     tile.addEventListener('mouseleave', () => {
-      rect = null;
-      tile.style.transform = '';
+      invalidate();
+      inner.style.transform = '';
       inner.style.setProperty('--px', 0);
       inner.style.setProperty('--py', 0);
     });
