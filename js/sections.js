@@ -84,7 +84,7 @@ function initCards() {
   tiles.forEach((tile) => {
     if (tile.id === 'dossier') return;
     const inner = tile.querySelector('.tilt');
-    // pointer events live on the static tile; only the inner layer transforms
+    // pointer events live on the static tile; only the .tilt layer transforms
     let rect = null;
     const invalidate = () => {
       rect = null;

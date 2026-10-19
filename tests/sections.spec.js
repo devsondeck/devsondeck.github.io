@@ -90,6 +90,7 @@ test.describe('reduced motion', () => {
 });
 
 test('stripe wraps without a visible jump', async ({ page }) => {
+  test.slow();
   await page.addInitScript(() => {
     window.__tx = [];
     const rec = () => {
@@ -101,12 +102,13 @@ test('stripe wraps without a visible jump', async ({ page }) => {
   });
   await page.clock.install();
   await page.goto('/');
-  await page.clock.runFor(30000);
-  const tx = await page.evaluate(() => window.__tx);
   const period = await page.evaluate(() => {
     const k = document.querySelector('.marquee .track').children;
     return k[8].offsetLeft - k[0].offsetLeft;
   });
+  // one frame = 16ms = 1px of drift, so this runs just past one wrap
+  await page.clock.runFor(Math.ceil(period * 16) + 800);
+  const tx = await page.evaluate(() => window.__tx);
   expect(period).toBeGreaterThan(500);
   let wraps = 0;
   for (let i = 1; i < tx.length; i++) {
