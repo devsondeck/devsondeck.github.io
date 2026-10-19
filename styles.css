@@ -213,7 +213,7 @@ h2 span { color: var(--acc); }
 .t1 { --rim: rgba(17, 16, 15, .55); --spot: rgba(255, 255, 255, .12); }
 .t1 .tilt { background: var(--acc); }
 .t1 .in { background: var(--acc); color: var(--on-acc); }
-.t1 p { color: rgba(17, 16, 15, .78); }
+.t1 p { color: rgba(17, 16, 15, .9); }
 
 /* the wide card: copy left, terminal right */
 .t3 .in { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 48px; align-items: center; }
