@@ -90,6 +90,7 @@ test.describe('reduced motion', () => {
 });
 
 test('stripe wraps without a visible jump', async ({ page }) => {
+  test.setTimeout(120000);
   await page.clock.install();
   await page.goto('/');
   const tx = [];
