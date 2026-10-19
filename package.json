@@ -1,0 +1,23 @@
+{
+  "name": "devsondeck-site",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "playwright test",
+    "validate": "html-validate index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devsondeck/devsondeck.github.io.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/devsondeck/devsondeck.github.io/issues"
+  },
+  "homepage": "https://github.com/devsondeck/devsondeck.github.io#readme",
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "html-validate": "11.16.4",
+    "http-server": "14.1.1"
+  },
+  "private": "true"
+}

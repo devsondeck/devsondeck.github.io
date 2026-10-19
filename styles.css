@@ -1,0 +1,51 @@
+/* Ember, pinned to the logo's exact colours */
+:root {
+  --bg: #11100f;
+  --panel: #1a1613;
+  --line: #2c241f;
+  --ink: #ede8df;
+  --dim: #9a8f84;
+  --acc: #f95721;
+  --acc2: #ffab85;
+  --on-acc: #11100f;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--bg); overflow-x: clip; }
+html.lenis, html.lenis body { height: auto; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: clip;
+}
+
+a, button, input { font: inherit; color: inherit; }
+
+/* logo symbol fills, overridable per use via --mk-* */
+.m-ink { fill: var(--mk-ink, var(--ink)); }
+.m-acc { fill: var(--mk-acc, var(--acc)); }
+.m-bg { fill: var(--mk-bg, var(--bg)); }
+
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 3px; }
+
+/* skip link: visible only on focus */
+.skip {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  padding: 10px 16px;
+  border-radius: 99px;
+  background: var(--acc);
+  color: var(--on-acc);
+  font: 700 13px 'JetBrains Mono', monospace;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.skip:focus, .skip:focus-visible { transform: none; }
+
+.sprite { position: absolute; }
