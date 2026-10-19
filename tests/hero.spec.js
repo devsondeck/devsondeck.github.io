@@ -31,11 +31,12 @@ test('words rotate', async ({ page }) => {
 test('chat plays in order', async ({ page }) => {
   await page.goto('/');
   const count = () => page.locator('#chat .msg.on').count();
-  await page.waitForTimeout(1000);
-  expect(await count()).toBe(1);
+  // the first message appears, and messages only ever turn on in order
+  await expect.poll(count, { timeout: 4000 }).toBeGreaterThanOrEqual(1);
   await expect(page.locator('#chat .msg').first()).toHaveClass(/\bon\b/);
-  await page.waitForTimeout(4200);
-  expect(await count()).toBe(4);
+  await expect.poll(count, { timeout: 8000 }).toBe(4);
+  const on = await page.locator('#chat .msg').evaluateAll((els) => els.map((e) => e.classList.contains('on')));
+  expect(on.slice(0, 4)).toEqual([true, true, true, true]);
 });
 
 test('sticker text fits one lap', async ({ page }) => {

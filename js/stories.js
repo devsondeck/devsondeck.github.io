@@ -83,8 +83,10 @@ function initBuild() {
 
   story(build, async (stop) => {
     build.className = 'viz';
-    bar.style.width = '0%'; pct.textContent = '0%'; url.textContent = 'localhost:3000';
-    ptr.style.transition = 'none'; ptr.style.left = '78%'; ptr.style.top = '24%';
+    bar.style.transform = 'scaleX(0)'; pct.textContent = '0%'; url.textContent = 'localhost:3000';
+    ptr.style.transition = 'none';
+    ptr.style.setProperty('--px', win.offsetWidth * 0.78 + 'px');
+    ptr.style.setProperty('--py', win.offsetHeight * 0.24 + 'px');
     void ptr.offsetWidth; // one reflow per run, so the pointer snaps back before it moves again
     ptr.style.transition = '';
     const [x, y] = target(); // measured once per run
@@ -92,7 +94,7 @@ function initBuild() {
     await wait(600); if (stop()) return; build.classList.add('s2');
     await wait(700); if (stop()) return; build.classList.add('s3');
     await wait(500); if (stop()) return; build.classList.add('s4');
-    ptr.style.left = x + 'px'; ptr.style.top = y + 'px';
+    ptr.style.setProperty('--px', x + 'px'); ptr.style.setProperty('--py', y + 'px');
     await wait(1000); if (stop()) return;
     build.classList.add('s5'); url.textContent = 'building…';
     await wait(160); if (stop()) return;
@@ -103,7 +105,7 @@ function initBuild() {
         const k = Math.min(1, Math.max(0, (t - t0) / 1400));
         if (stop()) { off(); resolve(); return; }
         const e = 1 - Math.pow(1 - k, 3);
-        bar.style.width = e * 100 + '%'; pct.textContent = Math.round(e * 100) + '%';
+        bar.style.transform = `scaleX(${e})`; pct.textContent = Math.round(e * 100) + '%';
         if (k >= 1) { off(); resolve(); }
       });
     });

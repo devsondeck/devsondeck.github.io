@@ -84,6 +84,33 @@ test('paused off screen', async ({ page }) => {
   expect(await text()).toBe(before);
 });
 
+// scroll so only `frac` of #build is inside the viewport (card enters from the bottom)
+const showFraction = (page, frac) => page.evaluate((f) => {
+  const r = document.querySelector('#build').getBoundingClientRect();
+  window.scrollBy({ top: r.top - (innerHeight - r.height * f), behavior: 'instant' });
+}, frac);
+
+test('does not start below 35% visible', async ({ page }) => {
+  await away(page);
+  await showFraction(page, 0.2);
+  await page.waitForTimeout(2500);
+  // never reset: still the shipped finished state
+  await expect(page.locator('#build')).toHaveClass('viz s1 s2 s3 s7');
+});
+
+test('stops when it drops below 35% visible', async ({ page }) => {
+  await toCards(page);
+  await expect(page.locator('#build')).toHaveClass('viz'); // running: reset happened
+  await showFraction(page, 0.2);
+  await page.waitForTimeout(1000); // reveal motion and in-flight step settle
+  await showFraction(page, 0.2); // re-aim: the tile's reveal moved it a little
+  await page.waitForTimeout(1000);
+  const cls = () => page.locator('#build').getAttribute('class');
+  const before = await cls();
+  await page.waitForTimeout(2500);
+  expect(await cls()).toBe(before);
+});
+
 test('restart is clean', async ({ page }) => {
   test.slow();
   await toCards(page);

@@ -43,16 +43,18 @@ export function story(el, play) {
         await play(() => run !== id);
       } catch (err) {
         console.error('story failed', err);
+        if (run === id) run = 0;
         return;
       }
     }
   };
   new IntersectionObserver(([e]) => {
-    if (e.isIntersecting && !run) {
+    const visible = e.intersectionRatio >= 0.35;
+    if (visible && !run) {
       run = ++seq;
       loop(run);
-    } else if (!e.isIntersecting) {
+    } else if (!visible) {
       run = 0;
     }
-  }, { threshold: 0.35 }).observe(el);
+  }, { threshold: [0, 0.35] }).observe(el);
 }

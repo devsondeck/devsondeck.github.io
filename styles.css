@@ -221,10 +221,10 @@ h2 span { color: var(--acc); }
 .sw2::after { content: ""; position: absolute; top: 2px; left: 2px; width: 15px; height: 15px; border-radius: 50%; background: var(--ink); transition: transform .45s cubic-bezier(.34, 1.56, .64, 1); }
 .r-act .pbar { flex: 1; height: 8px; border-radius: 99px; background: #221c18; overflow: hidden; }
 .r-act .pbar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--acc), var(--acc2)); border-radius: 99px; }
-#b-bar { width: 100%; }
+#b-bar { width: 100%; transform-origin: left; }
 .r-act .pct { font: 11px 'JetBrains Mono', monospace; color: var(--dim); width: 36px; text-align: right; }
 .bbtn { background: var(--ink); color: var(--bg); font-weight: 700; font-size: 12px; padding: 8px 14px; border-radius: 99px; transition: transform .15s, background .25s, color .25s; }
-.ptr { position: absolute; width: 16px; height: 16px; fill: var(--ink); stroke: var(--bg); stroke-width: 1.2; left: 78%; top: 22%; opacity: 0; transition: left .9s cubic-bezier(.65, 0, .35, 1), top .9s cubic-bezier(.65, 0, .35, 1), opacity .3s, transform .15s; z-index: 2; }
+.ptr { position: absolute; width: 16px; height: 16px; fill: var(--ink); stroke: var(--bg); stroke-width: 1.2; left: 0; top: 0; opacity: 0; transform: translate(var(--px, 0px), var(--py, 0px)) scale(var(--ps, 1)); transition: transform .9s cubic-bezier(.65, 0, .35, 1), opacity .3s; z-index: 2; }
 .toast { position: absolute; right: 12px; top: 38px; background: var(--acc); color: var(--on-acc); font: 700 11px 'JetBrains Mono', monospace; padding: 7px 11px; border-radius: 10px; opacity: 0; transform: translateY(-8px); transition: opacity .45s, transform .45s cubic-bezier(.16, 1, .3, 1); box-shadow: 0 10px 24px -8px rgba(249, 87, 33, .6); }
 #build.s1 .r-title .sk, #build.s2 .r-tog .sk { opacity: 0; }
 #build.s1 .r-title .txt, #build.s2 .r-tog .txt { opacity: 1; transform: none; }
@@ -233,7 +233,7 @@ h2 span { color: var(--acc); }
 #build.s3 .sw2::after { transform: translateX(15px); }
 #build.s4 .ptr { opacity: 1; }
 #build.s5 .bbtn { transform: scale(.92); background: var(--acc); color: var(--on-acc); }
-#build.s5 .ptr { transform: scale(.85); }
+#build.s5 .ptr { --ps: .85; }
 #build.s7 .toast { opacity: 1; transform: none; }
 #build.s7 .bar span { color: var(--acc); }
 
