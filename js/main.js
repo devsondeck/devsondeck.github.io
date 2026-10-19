@@ -6,6 +6,9 @@ import { initPointer } from './pointer.js';
 import { initField } from './field.js';
 import { initHero } from './hero.js';
 
+// Tells the head script that the module graph loaded, so it keeps `js-motion`.
+document.documentElement.dataset.boot = '1';
+
 // Each init is isolated so one failure cannot block the others.
 function boot(name, fn) {
   try {

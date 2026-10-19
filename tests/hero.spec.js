@@ -82,3 +82,11 @@ test('js-motion is set before main.js runs and hero shows with Lenis blocked', a
   await expect(page.locator('#h1 .w > span').first()).toHaveCSS('transform', 'none', { timeout: 3000 });
   await expect(page.locator('#sub')).toHaveCSS('opacity', '1', { timeout: 3000 });
 });
+
+test('content is revealed when the module graph fails to load', async ({ page }) => {
+  await page.route('**/js/hero.js', (r) => r.abort());
+  await page.goto('/');
+  await expect(page.locator('html')).not.toHaveClass(/js-motion/, { timeout: 4000 });
+  await expect(page.locator('#h1 .w > span').first()).toHaveCSS('transform', 'none');
+  await expect(page.locator('#sub')).toHaveCSS('opacity', '1');
+});
