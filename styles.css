@@ -308,3 +308,6 @@ footer a:hover { color: var(--ink); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* terminal lines fade in while the story plays; the shipped HTML shows them all */
+.term.run .l:not(.on) { opacity: 0; transform: translateY(4px); }
