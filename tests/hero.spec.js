@@ -29,14 +29,16 @@ test('words rotate', async ({ page }) => {
 });
 
 test('chat plays in order', async ({ page }) => {
-  await page.goto('/');
-  // sample which messages are on, over time, from page load
-  await page.evaluate(() => {
+  // sample which messages are on, over time, from before the page script runs
+  // (the load event can land after the first message when the web fonts are slow)
+  await page.addInitScript(() => {
     window.__samples = [];
     const read = () => [...document.querySelectorAll('#chat .msg')].map((m, i) => (m.classList.contains('on') ? i : -1)).filter((i) => i >= 0);
-    window.__samples.push(read());
-    window.__timer = setInterval(() => window.__samples.push(read()), 25);
+    // only sample once the chat is parsed, so the first sample is a real start state
+    const tick = () => { if (document.querySelector('#chat .msg')) window.__samples.push(read()); };
+    window.__timer = setInterval(tick, 25);
   });
+  await page.goto('/');
   await expect.poll(() => page.evaluate(() => Math.max(...window.__samples.map((s) => s.length))), { timeout: 10000 }).toBe(4);
   const samples = await page.evaluate(() => {
     clearInterval(window.__timer);
@@ -53,9 +55,26 @@ test('chat plays in order', async ({ page }) => {
   }
 });
 
-test('sticker text fits one lap', async ({ page }) => {
+test('no spinning sticker', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('.sticker textPath')).toHaveAttribute('textLength', '301');
+  await expect(page.locator('.sticker')).toHaveCount(0);
+});
+
+test('headline is set in Cabinet Grotesk', async ({ page }) => {
+  await page.goto('/');
+  const family = await page.locator('#h1').evaluate((e) => getComputedStyle(e).fontFamily);
+  expect(family.split(',')[0].replace(/["']/g, '').trim()).toBe('Cabinet Grotesk');
+});
+
+test('longest rotating word fits line 2', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => document.fonts.ready);
+  const r = await page.evaluate(() => {
+    const rot = document.getElementById('rot');
+    const right = Math.max(...[...rot.querySelectorAll('.word')].map((w) => w.getBoundingClientRect().right));
+    return { right, vw: document.documentElement.clientWidth };
+  });
+  expect(r.right).toBeLessThanOrEqual(r.vw - 16);
 });
 
 test.describe('reduced motion', () => {
@@ -81,7 +100,7 @@ test('resize keeps layout', async ({ page, isMobile }) => {
     await page.setViewportSize({ width: w, height: 900 });
     await page.waitForTimeout(400);
     expect(await noOverflow(), `overflow at ${w}`).toBe(true);
-    if (desktop) expect((await box(page, '#chat')).width).toBeCloseTo(400, 0);
+    if (desktop) expect((await box(page, '#chat')).width).toBeCloseTo(420, 0);
   }
 });
 

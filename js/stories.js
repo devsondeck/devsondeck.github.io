@@ -15,7 +15,7 @@ function initFlow() {
     for (const s of sparks) s.getAnimations().forEach((a) => a.cancel());
     for (const e of edges) e.classList.remove('hot');
     for (const n of nodes) n.classList.remove('active', 'work', 'pop');
-    for (const id of ['n-sheet', 'n-slack']) { $(id).classList.remove('done'); sub(id, '—'); }
+    for (const id of ['n-sheet', 'n-slack']) { $(id).classList.remove('done'); sub(id, '…'); }
     sub('n-inbox', '142 new');
     sub('n-inv', '38 unpaid');
     sub('n-agent', 'waiting…');
@@ -64,7 +64,7 @@ function initFlow() {
     sub('n-agent', 'flagging finance');
     if (await travel(3, stop)) return;
     done('n-slack', '✓ team pinged');
-    agent('2 done · 0 humans', false);
+    agent('2 done, 0 humans', false);
     await wait(3200);
   });
 }
@@ -119,7 +119,7 @@ function initTerm() {
   const term = $('term');
   const cmd = 'dod crawl --target competitors';
   const out = [
-    '↳ 14 sites queued · 3 need a real browser',
+    '↳ 14 sites queued, 3 need a real browser',
     '<span class="p">✓</span> 1,284 products scraped <span class="dimmer">(2m 41s)</span>',
     '<span class="p">✓</span> prices diffed vs yesterday',
     '<span class="p">→</span> 23 price drops posted to #pricing',

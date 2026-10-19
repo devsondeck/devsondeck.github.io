@@ -2,7 +2,12 @@ const { test, expect } = require('@playwright/test');
 
 const services = (page) => page.locator('#flow').scrollIntoViewIfNeeded();
 const away = (page) => page.evaluate(() => window.scrollTo(0, 0));
-const toCards = (page) => page.locator('#build').scrollIntoViewIfNeeded();
+// the build card and the terminal card both in view (they sit on different bento rows)
+const toCards = (page) => page.evaluate(() => {
+  const b = document.getElementById('build').getBoundingClientRect();
+  const t = document.getElementById('term').getBoundingClientRect();
+  window.scrollBy({ top: (b.top + t.bottom) / 2 - innerHeight / 2, behavior: 'instant' });
+});
 
 // samples text/classes every 100ms and collapses repeats
 async function observe(page, ms, read) {
@@ -33,7 +38,7 @@ test('card 1 sequence order', async ({ page }) => {
   await services(page);
   const agent = await observe(page, 9000, () => document.querySelector('#n-agent small').textContent);
   expect(inOrder(agent, ['waiting…', 'reading order email', 'logging the order', 'waiting…',
-    'spotting overdue', 'flagging finance', '2 done · 0 humans'])).toBe(true);
+    'spotting overdue', 'flagging finance', '2 done, 0 humans'])).toBe(true);
 });
 
 test('card 1 sheet is filled before slack', async ({ page }) => {
@@ -44,13 +49,13 @@ test('card 1 sheet is filled before slack', async ({ page }) => {
     document.querySelector('#n-slack small').textContent,
   ]);
   // drop the shipped finished state sampled before the story resets it
-  const seen = all.slice(all.findIndex((s) => s[0] === '—'));
+  const seen = all.slice(all.findIndex((s) => s[0] === '…'));
   const firstSheet = seen.findIndex((s) => s[0] === '✓ row added');
   const firstSlack = seen.findIndex((s) => s[1] === '✓ team pinged');
   expect(firstSheet).toBeGreaterThan(-1);
   expect(firstSlack).toBeGreaterThan(firstSheet);
   // the sheet was empty while slack was still waiting
-  expect(seen.some((s) => s[0] === '—' && s[1] === '—')).toBe(true);
+  expect(seen.some((s) => s[0] === '…' && s[1] === '…')).toBe(true);
 });
 
 test('card 2 reaches deployed', async ({ page }) => {

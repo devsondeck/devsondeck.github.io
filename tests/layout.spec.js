@@ -25,6 +25,18 @@ test('key copy present', async ({ page }) => {
   }
 });
 
+test('no dashes or emoji in visible text', async ({ page }) => {
+  const text = await page.evaluate(() => document.body.innerText);
+  expect(text).not.toMatch(/[\u2013\u2014]/);
+  // the chat's salute is the only emoji allowed
+  expect(text.replace(/\u{1FAE1}/gu, '')).not.toMatch(/\p{Emoji_Presentation}|\uFE0F/u);
+});
+
+test('no section eyebrows', async ({ page }) => {
+  await expect(page.locator('.eyebrow, .label, .sec-label')).toHaveCount(0);
+  expect(await page.evaluate(() => document.body.innerText)).not.toContain('//');
+});
+
 test('no horizontal overflow', async ({ page }) => {
   const over = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
   expect(over).toBeLessThanOrEqual(0);
@@ -42,7 +54,7 @@ test('phone nav shows only the logo and hmu', async ({ page }, info) => {
 test('hero chat column is fixed', async ({ page }, info) => {
   test.skip(info.project.name !== 'desktop');
   const w = await page.locator('#chat').evaluate((e) => e.getBoundingClientRect().width);
-  expect(w).toBe(400);
+  expect(w).toBe(420);
 });
 
 test('story visuals render finished', async ({ page }) => {
@@ -50,7 +62,7 @@ test('story visuals render finished', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await expect(page.locator('#n-inbox small')).toHaveText('141 new');
-  await expect(page.locator('#n-agent small')).toHaveText('2 done · 0 humans');
+  await expect(page.locator('#n-agent small')).toHaveText('2 done, 0 humans');
   await expect(page.locator('#build')).toHaveClass(/s1.*s2.*s3.*s7/);
   await expect(page.locator('#term .l')).toHaveCount(6);
   await expect(page.locator('#chat .msg')).toHaveCount(4);

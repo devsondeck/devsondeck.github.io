@@ -4,19 +4,8 @@ import { target } from './pointer.js';
 const COLORS = { acc: '#f95721', acc2: '#ffab85', ink: '#ede8df' };
 
 export function initField(canvas) {
-  const glow = document.querySelector('.glow');
-  let gx = innerWidth * 0.6;
-  let gy = innerHeight * 0.4;
-  let gw = glow ? glow.offsetWidth : 0;
-  const place = () => {
-    if (glow) glow.style.transform = `translate3d(${gx - gw / 2}px, ${gy - gw / 2}px, 0)`;
-  };
-
-  if (reduce) {
-    // static glow only; nothing is drawn and nothing animates
-    place();
-    return;
-  }
+  // reduced motion: nothing is drawn and nothing animates
+  if (reduce) return;
 
   const ctx = canvas.getContext('2d');
   let W = 0;
@@ -33,7 +22,6 @@ export function initField(canvas) {
     H = canvas.height = Math.round(innerHeight * dpr);
     canvas.style.width = innerWidth + 'px';
     canvas.style.height = innerHeight + 'px';
-    if (glow) gw = glow.offsetWidth;
     if (!widthChanged && pts.length) return; // height-only resize (mobile URL bar): keep points
     pts = [];
     const gap = (innerWidth < 860 ? 30 : 38) * dpr;
@@ -56,10 +44,6 @@ export function initField(canvas) {
 
   onFrame((t) => {
     const time = t / 1000;
-    gx += (target.x - gx) * 0.04;
-    gy += (target.y - gy) * 0.04;
-    place();
-
     ctx.clearRect(0, 0, W, H);
     ctx.lineCap = 'round';
     ctx.lineWidth = 1.5 * dpr;

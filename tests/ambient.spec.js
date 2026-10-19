@@ -38,21 +38,30 @@ test('field idle still moves', async ({ page, isMobile }) => {
   expect(a.sig).not.toBe(b.sig);
 });
 
-test('reduced motion: no field, no custom cursor', async ({ page, isMobile }) => {
+test('reduced motion: no field', async ({ page, isMobile }) => {
   test.skip(isMobile, 'desktop only');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await page.mouse.move(300, 300);
   await page.waitForTimeout(500);
   expect((await sample(page)).n).toBe(0);
-  await expect(page.locator('.cur-dot')).not.toBeVisible();
+});
+
+test('native cursor: no custom cursor or cursor glow', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'desktop only');
+  await page.goto('/');
+  await page.mouse.move(300, 300);
+  await page.mouse.move(420, 360);
+  await page.waitForTimeout(300);
+  await expect(page.locator('.cur-dot, .cur-ring, .glow')).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.classList.contains('has-cursor'))).toBe(false);
+  expect(await page.evaluate(() => getComputedStyle(document.body).cursor)).toBe('auto');
 });
 
 test('touch: no custom cursor', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'phone only');
   await page.goto('/');
-  await expect(page.locator('.cur-dot')).not.toBeVisible();
-  await expect(page.locator('.cur-ring')).not.toBeVisible();
+  await expect(page.locator('.cur-dot, .cur-ring')).toHaveCount(0);
   expect(await page.evaluate(() => getComputedStyle(document.body).cursor)).toBe('auto');
   await page.locator('.t1').tap();
   expect(await page.locator('.t1').evaluate((el) => getComputedStyle(el).transform)).toBe('none');
