@@ -128,7 +128,7 @@ test('tile hit area is stable near a corner', async ({ page, isMobile }) => {
   await expect(t).toHaveClass(/show/);
   await page.waitForTimeout(1200);
   const b = await t.boundingBox();
-  const x = b.x + b.width - 10; // inside the 26px corner radius
+  const x = b.x + b.width - 10; // inside the 12px corner radius
   const y = b.y + 10;
   await page.mouse.move(x - 20, y + 20);
   for (let i = 0; i < 8; i++) {

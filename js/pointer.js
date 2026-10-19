@@ -28,30 +28,6 @@ function updateTarget(t) {
   target.strength += ((idle ? 0.55 : 1) - target.strength) * 0.05;
 }
 
-function initCursor() {
-  const dot = document.querySelector('.cur-dot');
-  const ring = document.querySelector('.cur-ring');
-  if (!dot || !ring) return;
-  const show = (e) => {
-    if (e.pointerType === 'touch') return;
-    document.documentElement.classList.add('has-cursor');
-    removeEventListener('pointermove', show);
-  };
-  addEventListener('pointermove', show, { passive: true });
-  let rx = pointer.x;
-  let ry = pointer.y;
-  onFrame(() => {
-    rx += (pointer.x - rx) * 0.16;
-    ry += (pointer.y - ry) * 0.16;
-    dot.style.transform = `translate3d(${pointer.x}px,${pointer.y}px,0)`;
-    ring.style.transform = `translate3d(${rx}px,${ry}px,0)`;
-  });
-  document.querySelectorAll('a, button, .tile').forEach((el) => {
-    el.addEventListener('mouseenter', () => ring.classList.add('big'));
-    el.addEventListener('mouseleave', () => ring.classList.remove('big'));
-  });
-}
-
 function initMagnetic() {
   document.querySelectorAll('.mag').forEach((mag) => {
     const t = mag.querySelector('.t');
@@ -74,7 +50,6 @@ function initMagnetic() {
 export function initPointer() {
   onFrame(updateTarget);
   if (reduce) return;
-  if (matchMedia('(pointer: fine)').matches) initCursor();
   // hover-only effects never bind on touch, so nothing can get stuck after a tap
   if (matchMedia('(hover: hover)').matches) initMagnetic();
 }
